@@ -1,8 +1,15 @@
 from groq import Groq
 from pathlib import Path
+from prompt import PURPLE_COMET_PROMPT
 
-def call_api(prompt:str, API_KEY:str, model:str):
-        client = Groq(api_key=API_KEY)
+
+class QuestionSolver:
+    def __init__(self, question, key):
+        self.key = key
+
+    def solve_question(self, question:str, model:str = "llama3-70b-8192"):
+        prompt = PURPLE_COMET_PROMPT.format(question_text=question)
+        client = Groq(api_key=self.key)
         try:
             response = client.chat.completions.create(
                 messages=[

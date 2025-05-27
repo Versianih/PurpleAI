@@ -1,7 +1,8 @@
-Você está resolvendo uma questão da **Purple Comet Math Meet**.
+PURPLE_COMET_PROMPT = """
+Você está resolvendo uma questão da competição **Purple Comet Math Meet**.
 
 Instruções:
-- A resposta para cada questão é sempre um número inteiro maior ou igual a zero.
+- A resposta é sempre um número inteiro maior ou igual a zero.
 - Mostre seu raciocínio passo a passo.
 - Ao final, escreva APENAS O NÚMERO da resposta em uma linha separada, SEM parênteses, letras ou explicações extras.
 
@@ -12,3 +13,4 @@ Questão:
 {question_text}
 
 Sua resposta:
+"""
