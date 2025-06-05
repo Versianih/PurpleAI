@@ -176,6 +176,3 @@ cython_debug/
 # Inputs / Outputs
 inputs/**
 outputs/**
-
-# Tests
-test.py

@@ -3,12 +3,14 @@ from groq import Groq
 from AI.prompt import PURPLE_COMET_PROMPT
 from modules.env import Env
 from typing import List, Dict
+from time import sleep, perf_counter
 
 
 class QuestionSolver:
-    def __init__(self, questions: List[str], seasons: int = 5, model: str = "llama3-70b-8192", debug: bool = False):
+    def __init__(self, questions: List[str], seasons: int = 5, parallel: bool = False, model: str = "llama3-70b-8192", debug: bool = False):
         self.model = model
         self.seasons = seasons
+        self.parallel = parallel
         self.questions = questions
         self.debug = debug
         self.answers = {}
@@ -25,11 +27,11 @@ class QuestionSolver:
         if not self.API_KEYS:
             raise ValueError("Nenhuma chave de API válida encontrada!")
         
-        self.distribute_questions()
+        self.time = self.distribute_questions() if self.parallel == False else self.distribute_questions_parallel()
         self.final_answer()
 
 
-    def distribute_questions(self) -> None:
+    def distribute_questions(self) -> float:
         """
         Distribui as questões entre as APIs e resolve todas em múltiplas seasons
         """
@@ -42,11 +44,13 @@ class QuestionSolver:
         }
         
         print(f"Iniciando {self.seasons} seasons de resolução...\n")
+        start_solver = perf_counter()
         
         for season in range(self.seasons):
             print(f"Season {season + 1}/{self.seasons}")
             season_answers = {}
-            
+            start_season = perf_counter()
+
             for api_index, question_numbers in questions_distribution.items():
                 if api_index >= len(self.API_KEYS):
                     continue
@@ -57,14 +61,23 @@ class QuestionSolver:
                     if question_num <= len(self.questions):
                         question_text = self.questions[question_num - 1]
                         
-                        print(f"  | Resolvendo questão {question_num}")
+                        print(f"  | ⏳ Processando questão {question_num}", end="", flush=True)
                         answer = self.solve_question(api_key, question_text)
                         answer = '-' if not answer.isdigit() else answer
                         season_answers[question_num] = answer
+                        print('\r' + ' ' * 100 + '\r', end='', flush=True)
+                        print(f"  | {'✅' if answer != '-' else '❌'} Questão {question_num} processada")
+                        sleep(0.1)
             
             self.answers[f'season_{season + 1}'] = dict(sorted(season_answers.items()))
             
-            print(f"Season {season + 1} completa: {len(season_answers)} questões resolvidas\n")
+            print(f"Season {season + 1} completa.")
+            print(f"Tempo de execução da Season: {round(perf_counter() - start_season, 4)}s\n")
+
+        end_solver = perf_counter()
+        exec_time_solver = round(end_solver - start_solver, 4)
+        print(f'Tempo de execução total: {exec_time_solver}s\n')
+        return exec_time_solver
 
 
     def distribute_questions_parallel(self) -> None:
@@ -79,43 +92,49 @@ class QuestionSolver:
             3: [4, 9, 14, 19, 24, 29],
             4: [5, 10, 15, 20, 25, 30]
         }
-        
-        print(f"Iniciando {self.seasons} seasons de resolução(Parallel)...")
+
+        print(f"Iniciando {self.seasons} seasons de resolução em paralelo...\n")
         
         for season in range(self.seasons):
             print(f"Season {season + 1}/{self.seasons}")
             season_answers = {}
             tasks = []
-            
+
             for api_index, question_numbers in questions_distribution.items():
                 if api_index >= len(self.API_KEYS):
                     continue
-                    
+
                 api_key = self.API_KEYS[api_index]
-                
                 for question_num in question_numbers:
                     if question_num <= len(self.questions):
                         question_text = self.questions[question_num - 1]
                         tasks.append((api_key, question_text, question_num))
-            
+
             with concurrent.futures.ThreadPoolExecutor(max_workers=len(self.API_KEYS)) as executor:
-                future_to_question = {
-                    executor.submit(self.solve_question, task[0], task[1]): task[2] 
-                    for task in tasks
-                }
-                
+                future_to_question = {}
+                batch_size = 1
+
+                for i in range(0, len(tasks), batch_size):
+                    batch = tasks[i:i+batch_size]
+                    for task in batch:
+                        future_to_question[executor.submit(self.solve_question, task[0], task[1])] = task[2]
+                    
+                    if i + batch_size < len(tasks):
+                        sleep(1.5)
+
                 for future in concurrent.futures.as_completed(future_to_question):
                     question_num = future_to_question[future]
                     try:
                         answer = future.result()
+                        answer = '-' if not answer.isdigit() else answer
                         season_answers[question_num] = answer
-                        print(f"  Questão {question_num} resolvida")
+                        print(f"  | Questão {question_num} processada")
                     except Exception as exc:
-                        print(f"  Erro na questão {question_num}")
+                        print(f"  | Erro na questão {question_num}")
                         season_answers[question_num] = "-"
-            
+
             self.answers[f'season_{season + 1}'] = dict(sorted(season_answers.items()))
-            print(f"Season {season + 1} completa")
+            print(f"Season {season + 1} completa.\n")
 
 
     def solve_question(self, key: str, question: str) -> str:
@@ -149,7 +168,6 @@ class QuestionSolver:
         essa resposta será a resposta final, caso contrário a resposta
         final será '-'
         """
-        print("Calculando respostas finais...")
         
         final_answers = {}
         total_seasons = len(self.answers)
@@ -180,18 +198,18 @@ class QuestionSolver:
             
             if most_common_count > required_consensus:
                 final_answers[question_num] = most_common_text
-                print(f"  | Questão {question_num}: '{most_common_text}' ({most_common_count}/{total_seasons} seasons)")
+                # print(f"  | Questão {question_num}: '{most_common_text}' ({most_common_count}/{total_seasons} seasons)")
             else:
                 final_answers[question_num] = '-'
-                print(f"  | Questão {question_num}: SEM CONSENSO ({most_common_count}/{total_seasons} seasons) -> '-'")
+                # print(f"  | Questão {question_num}: SEM CONSENSO ({most_common_count}/{total_seasons} seasons) -> '-'")
         
         self.answers['final_season'] = dict(sorted(final_answers.items()))
         
-        consensus_count = sum(1 for answer in final_answers.values() if answer != '-')
-        print(f"\nRespostas finais calculadas:")
-        print(f"  | {consensus_count} questões com consenso")
-        print(f"  | {30 - consensus_count} questões sem consenso")
-        print(f"  | Taxa de consenso: {consensus_count/30*100:.1f}%")
+        # consensus_count = sum(1 for answer in final_answers.values() if answer != '-')
+        # print(f"\nRespostas finais calculadas:")
+        # print(f"  | {consensus_count} questões com consenso")
+        # print(f"  | {30 - consensus_count} questões sem consenso")
+        # print(f"  | Taxa de consenso: {consensus_count/30*100:.1f}%")
 
 
     def get_question_answer(self, question_num: int, season: int = 1) -> str:
@@ -221,21 +239,7 @@ class QuestionSolver:
         Retorna apenas as respostas finais
         """
         return self.answers.get('final_season', {})
+    
 
-
-    def get_summary(self) -> Dict:
-        """
-        Retorna um resumo das seasons processadas
-        """
-        summary = {
-            'total_seasons': len(self.answers),
-            'questions_per_season': {},
-            'total_questions': 0
-        }
-        
-        for season_key, season_data in self.answers.items():
-            question_count = len(season_data)
-            summary['questions_per_season'][season_key] = question_count
-            summary['total_questions'] += question_count
-        
-        return summary
+    def get_exec_time(self) -> float:
+        return self.time

@@ -3,8 +3,9 @@ from tabulate import tabulate
 
 
 class Results:
-    def __init__(self, data:Dict, save:bool = True, show: bool = True):
+    def __init__(self, data:Dict, time:float, save:bool = True, show: bool = True):
         self.data = data
+        self.time = time
         self.show = show
         self.save = save
 
@@ -14,7 +15,6 @@ class Results:
             self.show_results()
 
 
-    @staticmethod
     def show_results(self) -> str:
         header_labels = []
         for key in self.data.keys():
@@ -41,9 +41,9 @@ class Results:
 
         table = tabulate(table_data, headers=headers, tablefmt="grid")
         
-        print(f'\n{table}')
+        print(f'\n{table}\n')
+        print(f'  | ⏰ Tempo de execução total: {self.time}s')
 
 
-    @staticmethod
     def save_results(self):
         pass
