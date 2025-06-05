@@ -30,7 +30,7 @@ class Env:
             return False
 
     @staticmethod
-    def check_env(self) -> None:
+    def check_env() -> None:
         for i in range(5):
             key_name = f'API_KEY_{i+1}'
             current_key = Env.read_env(key_name)
