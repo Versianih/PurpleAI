@@ -1,5 +1,6 @@
 import sys, os, shutil
 from path import P
+from modules.env import Env
 
 line_command = sys.argv
 
@@ -8,8 +9,7 @@ try:
         print('Help')
 
     if line_command[1] == '-e' and line_command[2] == 'check':
-        print('Checando env')
-        pass
+        Env.check_env()
 
     if line_command[1] == '-c' and line_command[2] == 'output':
         if os.path.isdir(P.output_path):
@@ -20,4 +20,4 @@ try:
             os.makedirs('outputs')
             print(f"Diretório de output não encontrado.")
 except:
-    print("try: tools.py -h, for help.")
+    print("\ntry: tools.py -h, for help.")

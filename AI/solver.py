@@ -1,7 +1,7 @@
+import concurrent.futures
 from groq import Groq
 from AI.prompt import PURPLE_COMET_PROMPT
-from modules.env import read_env
-import concurrent.futures
+from modules.env import Env
 from typing import List, Dict
 
 
@@ -14,11 +14,11 @@ class QuestionSolver:
         self.answers = {}
         
         self.API_KEYS = [
-            read_env('API_KEY_1'), 
-            read_env('API_KEY_2'),
-            read_env('API_KEY_3'), 
-            read_env('API_KEY_4'), 
-            read_env('API_KEY_5')
+            Env.read_env('API_KEY_1'), 
+            Env.read_env('API_KEY_2'),
+            Env.read_env('API_KEY_3'), 
+            Env.read_env('API_KEY_4'), 
+            Env.read_env('API_KEY_5')
         ]
         self.API_KEYS = [key for key in self.API_KEYS if key]
         
