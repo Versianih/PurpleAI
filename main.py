@@ -1,9 +1,18 @@
+import sys
 from AI.solver import QuestionSolver
 from test import questions
-from modules.data import collect_data
+from modules.data import Data
 from modules.results import Results
 
-# seasons, exam_path = collect_data()
+data = Data.exec()
 
-solver = QuestionSolver(questions=questions, seasons=int(input('Número de seasons: ')), parallel=False)
-results = Results(solver.get_season_answers(), solver.get_exec_time())
+if data:
+
+    line_command = sys.argv
+    parallel = True if '-p' in line_command else False
+
+    questions_list = []
+
+    solver = QuestionSolver(questions=questions, seasons=data['seasons'], parallel=parallel)
+
+    results = Results(solver.get_season_answers(), solver.get_exec_time(), show = True, save=True)

@@ -43,7 +43,7 @@ class QuestionSolver:
             4: [5, 10, 15, 20, 25, 30]   # API_KEY_5
         }
         
-        print(f"Iniciando {self.seasons} seasons de resolução...\n")
+        print(f"Iniciando {self.seasons} seasons de processamento...\n")
         start_solver = perf_counter()
         
         for season in range(self.seasons):
@@ -93,10 +93,12 @@ class QuestionSolver:
             4: [5, 10, 15, 20, 25, 30]
         }
 
-        print(f"Iniciando {self.seasons} seasons de resolução em paralelo...\n")
+        print(f"Iniciando {self.seasons} seasons de processamento em paralelo...\n")
+        start_solver = perf_counter()
         
         for season in range(self.seasons):
             print(f"Season {season + 1}/{self.seasons}")
+            start_season = perf_counter()
             season_answers = {}
             tasks = []
 
@@ -112,7 +114,7 @@ class QuestionSolver:
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=len(self.API_KEYS)) as executor:
                 future_to_question = {}
-                batch_size = 1
+                batch_size = 2
 
                 for i in range(0, len(tasks), batch_size):
                     batch = tasks[i:i+batch_size]
@@ -120,7 +122,7 @@ class QuestionSolver:
                         future_to_question[executor.submit(self.solve_question, task[0], task[1])] = task[2]
                     
                     if i + batch_size < len(tasks):
-                        sleep(1.5)
+                        sleep(1)
 
                 for future in concurrent.futures.as_completed(future_to_question):
                     question_num = future_to_question[future]
@@ -128,13 +130,19 @@ class QuestionSolver:
                         answer = future.result()
                         answer = '-' if not answer.isdigit() else answer
                         season_answers[question_num] = answer
-                        print(f"  | Questão {question_num} processada")
+                        print(f"  | {'✅' if answer != '-' else '❌'} Questão {question_num} processada")
                     except Exception as exc:
-                        print(f"  | Erro na questão {question_num}")
+                        print(f"  | ❌ Erro na questão {question_num}")
                         season_answers[question_num] = "-"
 
             self.answers[f'season_{season + 1}'] = dict(sorted(season_answers.items()))
-            print(f"Season {season + 1} completa.\n")
+            print(f"Season {season + 1} completa.")
+            print(f"Tempo de execução da Season: {round(perf_counter() - start_season, 4)}s\n")
+
+        exec_time_solver = round(perf_counter() - start_solver, 4)
+        print(f'Tempo de execução total em paralelo: {exec_time_solver}s\n')
+        return exec_time_solver
+
 
 
     def solve_question(self, key: str, question: str) -> str:
