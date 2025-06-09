@@ -141,6 +141,6 @@ class Data:
 
         self.root.quit()
         
-    def exec(self):
+    def exec(self) -> dict:
         self.root.mainloop()
         return self.dados_salvos
