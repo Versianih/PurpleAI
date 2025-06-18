@@ -14,10 +14,9 @@ try:
     if line_command[1] == '-c' and line_command[2] == 'output':
         if os.path.isdir(P.output_path):
             shutil.rmtree(P.output_path)
-            os.makedirs('outputs')
             print(f"Outputs limpos com sucesso.")
         else:
-            os.makedirs('outputs')
             print(f"Diretório de output não encontrado.")
+        os.makedirs('output') if not os.path.isdir(P.output_path) else None
 except:
     print("\ntry: tools.py -h, for help.")
