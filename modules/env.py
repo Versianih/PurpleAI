@@ -6,7 +6,7 @@ from path import P
 
 class Env:
     @staticmethod
-    def read_env(key: str) -> str:
+    def read_env(key: str) -> str | None:
         load_dotenv(P.env_path)
         value = os.getenv(key)
         return value if value else None

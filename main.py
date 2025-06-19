@@ -18,5 +18,6 @@ if data:
     questions_list = converter.get_problem_list()
 
     solver = QuestionSolver(questions=questions_list, seasons=data['seasons'], parallel=parallel)
+    solver.solve()
 
-    results = Results(solver.get_season_answers(), solver.get_exec_time(), show = True, save=True, save_filename=input('Digite o nome do arquivo a ser salvo: '))
+    results = Results(solver, show = True, save=True, save_filename=input('Digite o nome do arquivo a ser salvo: '))

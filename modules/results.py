@@ -1,4 +1,5 @@
 import os
+from AI.solver import QuestionSolver
 from typing import Dict
 from pathlib import Path
 from path import P
@@ -6,9 +7,9 @@ from tabulate import tabulate
 
 
 class Results:
-    def __init__(self, data:Dict[str, dict], time:float, save_filename: str, save:bool = False, show: bool = False):
-        self.data = data
-        self.time = time
+    def __init__(self, object_solver: QuestionSolver, save_filename: str = 'results', save: bool = False, show: bool = False):
+        self.data = object_solver.get_season_answers()
+        self.time = object_solver.get_exec_time()
         self.show = show
         self.save = save
         self.save_filename = f'{save_filename}.md'
@@ -57,7 +58,7 @@ class Results:
     def save_results(self) -> None:
         """
         Salva os resultados em um arquivo .md com formato Markdown.
-        Exemplo do nome do arquivo: 2_5_0_06062025.md
+        Exemplo do nome do arquivo: results.md
         """
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
