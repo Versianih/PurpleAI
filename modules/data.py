@@ -1,16 +1,18 @@
+import os
+from time import sleep
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import os
 
 class Data:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("PurpleAI")
-        self.root.geometry("400x320")
+        self.root.geometry("400x400")
         self.root.resizable(False, False)
         
         self.arquivo_selecionado = ""
         self.seasons = tk.StringVar()
+        self.save_filename = tk.StringVar()
         self.seasons.trace('w', self.validar_campos)
         self.dados_salvos = None
         
@@ -33,6 +35,18 @@ class Data:
 
         self.label_erro_seasons = ttk.Label(seasons_frame, text="", foreground="red", font=("Arial", 8))
         self.label_erro_seasons.pack(anchor=tk.W)
+
+
+        filename_frame = ttk.Frame(main_frame)
+        filename_frame.pack(fill=tk.X, pady=(0, 15))
+
+        ttk.Label(filename_frame, text="Nome da pasta de Output:").pack(anchor=tk.W)
+        self.entry_filename = ttk.Entry(filename_frame, textvariable=self.save_filename)
+        self.entry_filename.pack(fill=tk.X, pady=(5, 0))
+
+        self.label_erro_filename = ttk.Label(filename_frame, text="", foreground="red", font=("Arial", 8))
+        self.label_erro_filename.pack(anchor=tk.W)
+
 
         arquivo_frame = ttk.Frame(main_frame)
         arquivo_frame.pack(fill=tk.X, pady=(0, 15))
@@ -83,6 +97,20 @@ class Data:
         except ValueError:
             self.label_erro_seasons.config(text="Deve ser um número inteiro válido")
             return False
+        
+    def validar_filename(self):
+        value = self.save_filename.get().split()
+
+        if not value:
+            self.label_erro_filename.config(text="Campo obrigatório")
+            return False
+        
+        if len(value) > 1:
+            self.label_erro_filename.config(text="A pasta de Output não deve conter espaços")
+            return False
+        
+        self.label_erro_filename.config(text="")
+        return True
             
     def validar_arquivo(self):
         if not self.arquivo_selecionado or not os.path.exists(self.arquivo_selecionado):
@@ -95,8 +123,9 @@ class Data:
     def validar_campos(self, *args):
         seasons_valido = self.validar_seasons()
         arquivo_valido = self.validar_arquivo()
+        filename_valido = self.validar_filename()
         
-        if seasons_valido and arquivo_valido:
+        if seasons_valido and arquivo_valido and filename_valido:
             self.btn_salvar.config(state="normal")
         else:
             self.btn_salvar.config(state="disabled")
@@ -126,20 +155,24 @@ class Data:
         
     def salvar(self):
         seasons = int(self.seasons.get())
+        save_filename = self.save_filename.get()
         arquivo = self.arquivo_selecionado
 
         self.dados_salvos = {
             'seasons': seasons,
+            'save_filename': save_filename,
             'exam_path': arquivo,
         }
 
         mensagem = f"Dados salvos com sucesso!\n\n"
         mensagem += f"Número de Seasons: {seasons}\n"
+        mensagem += f"Pasta de Output: {save_filename}\n"
         mensagem += f"Arquivo: {os.path.basename(arquivo)}"
 
         messagebox.showinfo("Sucesso", mensagem)
 
         self.root.quit()
+        sleep(0.5)
         
     def exec(self) -> dict:
         self.root.mainloop()

@@ -190,7 +190,7 @@ class QuestionSolver:
         for question_num in range(1, 31):
             answers_for_question = []
             
-            for season_key, season_data in self.answers.items():
+            for season_data in self.answers.values():
                 if question_num in season_data:
                     answer = season_data[question_num]
                     # Ignora respostas vazias, erros ou '-'
@@ -217,12 +217,6 @@ class QuestionSolver:
                 final_answers[question_num] = '-'
         
         self.answers['final_season'] = dict(sorted(final_answers.items()))
-        
-        # consensus_count = sum(1 for answer in final_answers.values() if answer != '-')
-        # print(f"\nRespostas finais calculadas:")
-        # print(f"  | {consensus_count} questões com consenso")
-        # print(f"  | {30 - consensus_count} questões sem consenso")
-        # print(f"  | Taxa de consenso: {consensus_count/30*100:.1f}%")
 
 
     def get_season_answers(self, season: int = None) -> Dict[str, Dict[int, int]]:

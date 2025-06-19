@@ -20,4 +20,4 @@ if data:
     solver = QuestionSolver(questions=questions_list, seasons=data['seasons'], parallel=parallel)
     solver.solve()
 
-    results = Results(solver, show = True, save=True, save_filename=input('Digite o nome do arquivo a ser salvo: '))
+    results = Results(solver, show = True, save=True, save_filename=data['save_filename'])
