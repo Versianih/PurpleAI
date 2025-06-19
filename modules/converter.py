@@ -1,12 +1,11 @@
 import re
-from path import P
 from PyPDF2 import PdfReader
 
 class Converter:
     """
     Testing class
     """
-    def __init__(self, pdf_path):
+    def __init__(self, pdf_path) -> None:
         self.pdf_path = pdf_path
         self.raw_text = ""
         self.problems = []
@@ -40,14 +39,7 @@ class Converter:
         
         self.problems = problems
 
-    def get_problem_list(self):
+    def get_problem_list(self) -> list:
         if not self.problems:
             self.parse_problems()
         return self.problems
-
-    def save_as_markdown(self, output_path):
-        if not self.problems:
-            self.parse_problems()
-        with open(output_path, "w", encoding="utf-8") as f:
-            for i, problem in enumerate(self.problems, start=1):
-                f.write(f"## Problema {i}\n\n{problem}\n\n---\n\n")

@@ -1,5 +1,8 @@
 import os
+import shutil
+
 from AI.solver import QuestionSolver
+from modules.converter import Converter
 from typing import Dict
 from pathlib import Path
 from path import P
@@ -7,16 +10,28 @@ from tabulate import tabulate
 
 
 class Results:
-    def __init__(self, object_solver: QuestionSolver, save_filename: str = 'results', save: bool = False, show: bool = False):
+    def __init__(self, object_solver: QuestionSolver,
+                       object_converter: Converter,
+                       pre_data: Dict,
+                       save: bool = False,
+                       show: bool = False) -> None:
+        
         self.data = object_solver.get_season_answers()
         self.time = object_solver.get_exec_time()
+        self.problems = object_converter.get_problem_list()
+        
+        self.pre_data = pre_data
         self.show = show
         self.save = save
-        self.save_filename = f'{save_filename}.md'
-        self.save_path = Path(P.output_path) / save_filename
+        self.save_path = Path(P.output_path) / self.pre_data['save_filename']
+        self.exam_file_path = self.pre_data['exam_path']
 
         if self.save and self.save_path:
+            if not os.path.exists(self.save_path):
+                os.makedirs(self.save_path)
             self.save_results()
+            self.save_problems()
+            self.save_exam_file()
         if self.show:
             self.show_results()
 
@@ -60,8 +75,6 @@ class Results:
         Salva os resultados em um arquivo .md com formato Markdown.
         Exemplo do nome do arquivo: results.md
         """
-        if not os.path.exists(self.save_path):
-            os.makedirs(self.save_path)
 
         # Cabeçalho da tabela
         headers = ["Questão"]
@@ -100,6 +113,18 @@ class Results:
         # Conteúdo completo do arquivo
         content_file = [header_line, separator_line] + table_lines
 
-        caminho_arquivo = os.path.join(self.save_path, self.save_filename)
+        caminho_arquivo = os.path.join(self.save_path, 'results.md')
         with open(caminho_arquivo, 'w', encoding='utf-8') as file:
             file.write("\n".join(content_file))
+
+
+    def save_problems(self) -> None:
+        save_file_path = os.path.join(self.save_path, 'problems.md')
+
+        with open(save_file_path, "w", encoding="utf-8") as file:
+            for i, problem in enumerate(self.problems, start=1):
+                file.write(f"## Problema {i}\n\n{problem}\n\n---\n\n")
+    
+    def save_exam_file(self) -> None:
+        save_file_path = Path(self.save_path) / 'exam.pdf'
+        shutil.copy2(self.exam_file_path, save_file_path)
