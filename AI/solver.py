@@ -82,7 +82,6 @@ class QuestionSolver:
 
         end_solver = perf_counter()
         exec_time_solver = round(end_solver - start_solver, 4)
-        print(f'Tempo de execução total: {exec_time_solver}s\n')
         
         self.time_solver = exec_time_solver
 
