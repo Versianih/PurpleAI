@@ -17,7 +17,7 @@ O PurpleAI foi desenvolvido para automatizar a resolução das provas da Olimpí
 
 - Python 3.7 ou superior
 - Conexão com a internet
-- Chaves de API válidas da Groq
+- Chaves de API válidas da Groq, que podem ser obtidas [AQUI](https://console.groq.com/keys)
 
 ## Instalação
 
