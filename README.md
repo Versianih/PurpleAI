@@ -121,18 +121,20 @@ Este comando irá:
 
 ```
 PurpleAI/
-├── main.py           # Arquivo principal do sistema
-├── tools.py          # Ferramenta de configuração de APIs
-├── requirements.txt  # Dependências do projeto
-├── README.md         # Este arquivo
 ├── AI/
-|   ├── solver.py     # Responsável pela resolução da prova 
-|   └── prompt.py     # Prompt fornecido ao modelo de linguagem
-└── modules/
-    ├── converter.py  # Responsável por converter o arquivo da prova em pdf para markdown
-    ├── data.py       # Responsável por coletar as informações iniciais pela janela Tkinter
-    ├── env.py        # Responsável por ler e editar o .env
-    └── results.py    # Responsável por exibir e salvar os resultados das resoluções
+│   ├── prompt.py     # Prompt fornecido ao modelo de linguagem
+│   └── solver.py     # Responsável pela resolução da prova
+├── modules/
+│   ├── converter.py  # Responsável por converter o arquivo da prova em pdf para markdown
+│   ├── data.py       # Responsável por coletar as informações iniciais pela janela Tkinter
+│   ├── env.py        # Responsável por ler e editar o .env
+│   └── results.py    # Responsável por exibir e salvar os resultados das resoluções
+├── main.py           # Arquivo principal do sistema
+├── path.py           # Paths do sistema
+├── tools.py          # Ferramentas de linha de comando do sistema
+├── LICENSE           # Arquivo de licensa
+├── README.md         # Este arquivo
+└── requirements.txt  # Dependências do projeto
 ```
 
 ## Contribuição
