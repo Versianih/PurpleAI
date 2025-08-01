@@ -89,16 +89,18 @@ O PurpleAI foi desenvolvido para automatizar a resolução das provas da Olimpí
 
 ## Configuração Inicial
 
-Antes de usar o sistema pela primeira vez, é necessário configurar as chaves de API da Groq:
+Antes de usar o sistema pela primeira vez, é necessário configurar as chaves de API da Groq. Para isso, execute o seguinte comando na linha de comando:
 
 ```bash
-python tools.py -e check
+python tools.py --setup
 ```
 
 Este comando irá:
 - Verificar se as chaves de API estão configuradas
 - Permitir a adição de até 5 chaves de API da Groq
 - Validar as chaves inseridas
+- Criar o diretório `output/` caso não exista
+- Criar o arquivo `.env` com as chaves de API configuradas
 
 ## Como Usar
 
@@ -132,7 +134,7 @@ PurpleAI/
 ├── main.py           # Arquivo principal do sistema
 ├── path.py           # Paths do sistema
 ├── tools.py          # Ferramentas de linha de comando do sistema
-├── LICENSE           # Arquivo de licensa
+├── LICENSE           # Arquivo de licença
 ├── README.md         # Este arquivo
 └── requirements.txt  # Dependências do projeto
 ```
@@ -143,7 +145,7 @@ Contribuições são bem-vindas! Se você tiver sugestões de melhorias ou corre
 
 ## Licença
 
-Esse projeto está sobre a Licensa MIT, saiba mais no arquivo [LICENSE](LICENSE).
+Esse projeto está sobre a Licença MIT, saiba mais no arquivo [LICENSE](LICENSE).
 
 ## Contato
 

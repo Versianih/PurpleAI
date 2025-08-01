@@ -15,7 +15,17 @@ if data:
     converter = Converter(data['exam_path'])
     questions_list = converter.get_problem_list()
 
-    solver = QuestionSolver(questions = questions_list, seasons = data['seasons'], parallel = parallel)
+    solver = QuestionSolver(
+        questions = questions_list, 
+        seasons = data['seasons'], 
+        parallel = parallel
+        )
     solver.solve()
 
-    results = Results(object_solver = solver, object_converter = converter, pre_data = data, show = True, save = True)
+    results = Results(
+        object_solver = solver, 
+        object_converter = converter,
+        pre_data = data, 
+        show = True, 
+        save = True
+        )
