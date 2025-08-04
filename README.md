@@ -2,6 +2,9 @@
 
 Sistema automatizado para resolução de provas da Olimpíada Purple Comet utilizando modelos de linguagem (LLM) através da API da Groq.
 
+## Situação
+### ⚒️ Em desenvolvimento ⚒️
+
 ## Descrição
 
 O PurpleAI foi desenvolvido para automatizar a resolução das provas da Olimpíada Purple Comet, utilizando 5 chaves de API da Groq para processar até 30 questões por execução. O sistema conta com um prompt inicial otimizado para auxiliar na interpretação e resolução dos problemas matemáticos.
