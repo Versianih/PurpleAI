@@ -150,30 +150,6 @@ class QuestionSolver:
         
         self.time_solver = exec_time_solver
 
-
-    def call_api(self, key: str, question: str) -> str:
-        """
-        Resolve uma questão individual
-        """
-        prompt = PURPLE_COMET_PROMPT.format(question_text=question)
-        client = Groq(api_key=key)
-        
-        try:
-            response = client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-                model=self.model,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            error_msg = f"Error connecting to model: {e}"
-            print(f"  | {error_msg}") if self.debug == True else None
-            return error_msg
-
     
     def final_answer(self) -> None:
         """
